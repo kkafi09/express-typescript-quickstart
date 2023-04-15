@@ -1,5 +1,4 @@
 const config = {
-  semi: false,
   tabWidth: 2,
   printWidth: 120,
   singleQuote: true,
@@ -7,6 +6,6 @@ const config = {
   trailingComma: 'none',
   arrowParens: 'always',
   endOfLine: 'auto'
-}
+};
 
-module.exports = config
+module.exports = config;
