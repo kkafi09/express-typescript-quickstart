@@ -12,8 +12,13 @@ yarn lint ||
     false;
 )
 
+echo '🏗️👷 Checking typescript on your project 👷‍♂️🏗️'
+yarn ts.check
+
+echo '🏗️👷 building project 👷‍♂️🏗️'
+yarn build
+
 echo '🎉 No error found: committing this now.... ✨🚀🏄‍♂️🍻'
 
-yarn ts.check
-yarn build
 yarn lint-staged
+

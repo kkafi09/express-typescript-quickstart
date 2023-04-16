@@ -8,6 +8,5 @@
   "overrides": [],
   "parserOptions": {
     "ecmaVersion": "latest"
-  },
-  "rules": {}
+  }
 }
