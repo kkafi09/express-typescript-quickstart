@@ -3,11 +3,11 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 import wrapper from '../helpers/wrapper';
-import jwtAuth from '../middlewares/jwtAuth';
+import jwtAuth, { RequestWithUser } from '../middlewares/jwtAuth';
 
 dotenv.config();
 
-const prisma = PrismaClient();
+const prisma = new PrismaClient();
 
 const login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
@@ -83,4 +83,28 @@ const register = async (req: Request, res: Response) => {
   }
 };
 
-export default { login, register };
+const getUser = async (req: RequestWithUser, res: Response) => {
+  const userId = req.user;
+
+  if (!userId) {
+    return wrapper.errorResponse(res, null, 'token not provided', 500);
+  }
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userId
+      }
+    });
+    const result = {
+      data: {
+        user
+      }
+    };
+    return wrapper.response(res, 'success', result, 'Success get User Auth', 201);
+  } catch (error) {
+    return wrapper.errorResponse(res, error, 'Error get user Auth', 500);
+  }
+};
+
+export default { login, register, getUser };

@@ -3,8 +3,8 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const jwt_secret = 'secret';
 
-export interface CustomRequest extends Request {
-  userId: string | JwtPayload;
+export interface RequestWithUser extends Request {
+  user?: number;
 }
 
 function generateToken(userId: Number) {
@@ -12,16 +12,17 @@ function generateToken(userId: Number) {
   return token;
 }
 
-function verifyToken(req: Request, res: Response, next: NextFunction) {
+function verifyToken(req: RequestWithUser, res: Response, next: NextFunction) {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
       throw new Error();
     }
-    const decoded = jwt.verify(token, jwt_secret);
-    (req as CustomRequest).userId = decoded;
+    const decoded = jwt.verify(token, jwt_secret as string) as JwtPayload;
+    (req as RequestWithUser).user = decoded.userId;
 
+    console.log('decoded', decoded);
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Please Authenticate' });

@@ -1,9 +1,13 @@
 import express from 'express';
+import userController from '../controllers/userController';
+import jwtAuth from '../middlewares/jwtAuth';
 
 const router = express.Router();
 
-router.post('/login');
-router.post('/register');
-router.get('/');
+router.post('/login', userController.login);
 
-module.exports = router;
+router.post('/register', userController.register);
+
+router.get('/', jwtAuth.verifyToken, userController.getUser);
+
+export default router;
