@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import morgan from 'morgan';
+import logger from './helpers/logger';
+
 import userApi from './api/user';
 
 dotenv.config();
@@ -19,8 +21,11 @@ app.get('/', (_req: Request, res: Response) => {
   return res.status(200).json({ message: 'This service is running properly.' });
 });
 
-app.use('/api/user/v1', userApi);
+app.use('/api/v1/user/', userApi);
 
 app.listen(port, () => {
-  return console.log(`Server is listening on ${port}`);
+  const ctx = 'app-listen';
+  logger.log(ctx, `This service is running properly on port ${port}`, 'initiate application');
 });
+
+export default app;
