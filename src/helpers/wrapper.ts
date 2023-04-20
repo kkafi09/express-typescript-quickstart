@@ -7,9 +7,9 @@ interface Meta {
   totalData: number;
 }
 
-const data = (data: Array<Object>) => ({
+const data = <T>(data: T | T[]) => ({
   err: null,
-  data
+  data: Array.isArray(data) ? data : [data]
 });
 
 const error = (err: any) => ({
@@ -60,7 +60,7 @@ const response = (
 
 const errorResponse = (res: Response, result: any, message: string = '', code: number = 500) => {
   let status = true;
-  let data = result.data || result;
+  let data = result ? result.message : null;
 
   res.status(code).json({
     success: status,
