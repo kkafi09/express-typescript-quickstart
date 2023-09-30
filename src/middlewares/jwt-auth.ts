@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 
 export interface RequestWithUser extends Request {
   userId?: number;
-  user?: User | null;
+  user?: any;
 }
 
 const generateToken = (userId: Number) => {
@@ -44,12 +44,49 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
     (req as RequestWithUser).userId = decoded.userId;
 
     // Fetch user data using Prisma
-    const user = await prisma.user.findFirst({
+    const user = await prisma.user.findUnique({
       where: {
         id: decoded.userId
       }
     });
-    (req as RequestWithUser).user = user;
+
+    if (!user) {
+      return wrapper.response(res, 'fail', null, 'Please authenticate', 401);
+    }
+
+    const roles = await prisma.roleUser.findMany({
+      where: {
+        userId: user.id
+      },
+      include: {
+        role: true
+      }
+    });
+
+    const roleIds = roles.map((role) => role.roleId);
+
+    const permissions = await prisma.rolePermission.findMany({
+      where: {
+        roleId: {
+          in: roleIds
+        }
+      },
+      include: {
+        permission: true
+      }
+    });
+
+    const userWithRolesAndPermissions = {
+      ...user,
+      roles: roles.map((role) => {
+        const rolePermissions = permissions.filter((rp) => rp.roleId === role.roleId).map((rp) => rp.permission);
+        return {
+          ...role.role,
+          permissions: rolePermissions
+        };
+      })
+    };
+    (req as RequestWithUser).user = userWithRolesAndPermissions;
 
     next();
   } catch (error: any) {

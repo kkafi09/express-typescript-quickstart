@@ -67,7 +67,7 @@ const register = async (req: Request, res: Response) => {
   }
 };
 
-const getUser = async (req: RequestWithUser, res: Response) => {
+const whoAmI = async (req: RequestWithUser, res: Response) => {
   const userId = req.userId;
 
   if (!userId) {
@@ -109,8 +109,8 @@ const createUser = async (req: Request, res: Response) => {
 };
 
 const updateUser = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.userId);
   try {
-    const userId = parseInt(req.params.id);
     const { name, username, email, password, phone_number } = req.body;
     const user = await prisma.user.update({
       where: { id: userId },
@@ -129,8 +129,9 @@ const updateUser = async (req: Request, res: Response) => {
 };
 
 const deleteUser = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.userId);
+
   try {
-    const userId = parseInt(req.params.id);
     await prisma.user.delete({
       where: { id: userId }
     });
@@ -141,12 +142,15 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 
 const getUserById = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.userId);
+
   try {
-    const userId = parseInt(req.params.id);
     const user = await prisma.user.findUnique({
       where: { id: userId }
     });
-    // return wrapper.response(res, 'success', { data: user }, 'User retrieved successfully', 200);
+    const result = wrapper.data(user);
+
+    return wrapper.response(res, 'success', result, 'User retrieved successfully', 200);
   } catch (error: any) {
     return wrapper.response(res, 'fail', error, 'Failed to retrieve user', 500);
   }
@@ -161,4 +165,4 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export default { login, register, getUser };
+export default { login, register, whoAmI, createUser, updateUser, deleteUser, getAllUsers, getUserById };

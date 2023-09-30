@@ -11,40 +11,41 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   name         String
-  username     String   @unique
-  email        String?  @unique
+  username     String    @unique
+  email        String?   @unique
   password     String
   phone_number String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now())
-  
-  roles RoleUser[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
+
+  roles        RoleUser[]
 }
 
 model Role {
-  id          Int      @id @default(autoincrement())
-  name        String
-  key         String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  id        Int       @id @default(autoincrement())
+  name      String
+  key       String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
 
+  permissions RolePermission[]
   users       RoleUser[]
-  permissions RolePermission[]  
 }
 
 model Permission {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
   key       String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
 
-  roles RolePermission[]  
+  roles RolePermission[]
 }
 
 model RolePermission {
+  id           Int      @id @default(autoincrement())
   roleId       Int
   permissionId Int
   createdAt    DateTime @default(now())
@@ -52,11 +53,10 @@ model RolePermission {
 
   role       Role       @relation(fields: [roleId], references: [id])
   permission Permission @relation(fields: [permissionId], references: [id])
-
-  @@id([roleId, permissionId])
 }
 
 model RoleUser {
+  id        Int      @id @default(autoincrement())
   roleId    Int
   userId    Int
   createdAt DateTime @default(now())
@@ -64,7 +64,4 @@ model RoleUser {
 
   role Role @relation(fields: [roleId], references: [id])
   user User @relation(fields: [userId], references: [id])
-
-  @@id([roleId, userId])
 }
-
