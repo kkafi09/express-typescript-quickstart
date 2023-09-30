@@ -7,20 +7,64 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://kafi:kafi@localhost/ett-db"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  username  String   @unique
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  name         String
+  username     String   @unique
+  email        String?  @unique
+  password     String
+  phone_number String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+  
+  roles RoleUser[]
 }
 
-enum Role {
-  ADMIN
-  USER
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String
+  key         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+
+  users       RoleUser[]
+  permissions RolePermission[]  
 }
+
+model Permission {
+  id        Int      @id @default(autoincrement())
+  name      String
+  key       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  roles RolePermission[]  
+}
+
+model RolePermission {
+  roleId       Int
+  permissionId Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+}
+
+model RoleUser {
+  roleId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  role Role @relation(fields: [roleId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([roleId, userId])
+}
+

@@ -19,16 +19,31 @@ const generateToken = (userId: Number) => {
   return token;
 };
 
-const verifyToken = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-      throw new Error();
+    let token: string | undefined;
+
+    // Check Authorization header
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
     }
 
-    const decoded = jwt.verify(token, jwt_secret as string) as JwtPayload;
+    // If not found in the header, check the accessToken cookie
+    if (!token && req.cookies && req.cookies.accessToken) {
+      token = req.cookies.accessToken;
+    }
+
+    // If still not found, return unauthorized
+    if (!token) {
+      return wrapper.response(res, 'fail', null, 'Unauthorized', 401);
+    }
+
+    // Verify the token
+    const decoded = jwt.verify(token, jwt_secret) as JwtPayload;
     (req as RequestWithUser).userId = decoded.userId;
 
+    // Fetch user data using Prisma
     const user = await prisma.user.findFirst({
       where: {
         id: decoded.userId
@@ -37,8 +52,8 @@ const verifyToken = async (req: RequestWithUser, res: Response, next: NextFuncti
     (req as RequestWithUser).user = user;
 
     next();
-  } catch (err) {
-    return wrapper.errorResponse(res, err, 'Please Authenticate', 401);
+  } catch (error: any) {
+    return wrapper.response(res, 'fail', error, 'Unauthorized', 401);
   }
 };
 

@@ -1,5 +1,14 @@
 import { Response } from 'express';
 
+type DataType = Array<any> | Object;
+type MetaType = Array<any>;
+
+type ResultType = {
+  data: DataType;
+  meta?: MetaType;
+  message?: string;
+  code?: number;
+};
 interface Meta {
   page: number;
   quantity: number;
@@ -23,51 +32,38 @@ const paginationData = (data: Array<Object>, meta: Meta) => ({
   meta
 });
 
-type DataType = Array<any> | Object;
-type MetaType = Array<any>;
-
-type ResultType = {
-  data: DataType;
-  meta?: MetaType;
-  message?: string;
-  code?: number;
-};
-
 const response = (
   res: Response,
-  type: 'success' | 'fail',
-  result: ResultType,
+  type: 'success' | 'fail' = 'success',
+  result: ResultType | null = null,
   message: string = '',
   code: number = 200
 ) => {
   let status = true;
-  let data = result.data || result;
-  let meta = result.meta;
-  if (type === 'fail') {
+  let data = result ? result.data : null;
+
+  if (type === 'fail' && result?.data !== null) {
     status = false;
-    data = [];
-    message = message || result.message || 'An error occurred';
-    code = code || result.code || 500;
+    data = null;
+    message = message || result?.message || 'An error occurred';
+    code = code || result?.code || 500;
   }
-  res.status(code).json({
+
+  const responseObj: any = {
     success: status,
-    data,
-    meta,
     message,
     code
-  });
-};
+  };
 
-const errorResponse = (res: Response, result: any, message: string = '', code: number = 500) => {
-  let status = true;
-  let data = result ? result.message : null;
+  if (data !== null && data !== undefined) {
+    if (Array.isArray(data)) {
+      responseObj.data = data.length === 1 ? data[0] : data;
+    } else {
+      responseObj.data = data;
+    }
+  }
 
-  res.status(code).json({
-    success: status,
-    data,
-    message,
-    code
-  });
+  res.status(code).json(responseObj);
 };
 
 const paginationResponse = (
@@ -79,18 +75,34 @@ const paginationResponse = (
 ) => {
   let status = true;
   let data = result.data;
-  if (type === 'fail') {
+  let meta = result.meta || null;
+
+  if (type === 'fail' && result.data !== null) {
     status = false;
     data = [];
-    message = result.message || message;
+    message = message || result.message || 'An error occurred';
+    code = code || result.code || 500;
   }
-  res.status(code).json({
+
+  const responseObj: any = {
     success: status,
-    data,
-    meta: result.meta,
     message,
     code
-  });
+  };
+
+  if (data !== null && data !== undefined) {
+    if (Array.isArray(data)) {
+      responseObj.data = data.length === 1 ? data[0] : data;
+    } else {
+      responseObj.data = data;
+    }
+  }
+
+  if (meta !== null) {
+    responseObj.meta = meta;
+  }
+
+  res.status(code).json(responseObj);
 };
 
-export default { data, error, response, errorResponse, paginationResponse, paginationData };
+export default { data, error, response, paginationResponse, paginationData };
