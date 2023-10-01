@@ -22,7 +22,7 @@ const createRole = async (req: Request, res: Response) => {
 };
 
 const updateRole = async (req: Request, res: Response) => {
-  const roleId = parseInt(req.params.id);
+  const roleId = parseInt(req.params.roleId);
   const { name, key } = req.body;
 
   try {
@@ -42,7 +42,7 @@ const updateRole = async (req: Request, res: Response) => {
 };
 
 const deleteRole = async (req: Request, res: Response) => {
-  const roleId = parseInt(req.params.id);
+  const roleId = parseInt(req.params.roleId);
 
   try {
     await prisma.role.delete({
@@ -56,7 +56,7 @@ const deleteRole = async (req: Request, res: Response) => {
 };
 
 const getRoleById = async (req: Request, res: Response) => {
-  const roleId = parseInt(req.params.id);
+  const roleId = parseInt(req.params.roleId);
 
   try {
     const role = await prisma.role.findUnique({

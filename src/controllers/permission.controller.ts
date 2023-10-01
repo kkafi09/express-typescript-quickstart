@@ -23,7 +23,7 @@ const createPermission = async (req: Request, res: Response) => {
 };
 
 const updatePermission = async (req: Request, res: Response) => {
-  const permissionId = parseInt(req.params.id);
+  const permissionId = parseInt(req.params.permissionId);
   const { name, key } = req.body;
 
   try {
@@ -44,7 +44,7 @@ const updatePermission = async (req: Request, res: Response) => {
 
 const deletePermission = async (req: Request, res: Response) => {
   try {
-    const permissionId = parseInt(req.params.id);
+    const permissionId = parseInt(req.params.permissionId);
 
     await prisma.permission.delete({
       where: { id: permissionId }
@@ -57,8 +57,9 @@ const deletePermission = async (req: Request, res: Response) => {
 };
 
 const getPermissionById = async (req: Request, res: Response) => {
+  const permissionId = parseInt(req.params.permissionId);
+
   try {
-    const permissionId = parseInt(req.params.id);
     const permission = await prisma.permission.findUnique({
       where: { id: permissionId }
     });
