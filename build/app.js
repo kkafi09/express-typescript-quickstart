@@ -29,6 +29,6 @@ app.use((err, req, res, next) => {
 app.get('/', (_req, res) => {
     return wrapper_1.default.response(res, 'success', null, 'This service is running properly!');
 });
-app.use('/user', user_1.default);
+app.use('/v1/user', user_1.default);
 exports.default = app;
 //# sourceMappingURL=app.js.map
