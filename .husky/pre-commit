@@ -19,6 +19,7 @@ echo '🏗️👷 Building project 👷‍♂️🏗️'
 yarn build
 
 echo '🏗️👷 Adding project to github 👷‍♂️🏗️'
+git add .
 
 echo '🎉 No error found: committing this now.... ✨🚀🏄‍♂️🍻'
 
