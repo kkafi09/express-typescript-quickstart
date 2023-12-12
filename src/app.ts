@@ -32,6 +32,6 @@ app.get('/', (_req, res) => {
   return wrapper.response(res, 'success', null, 'This service is running properly!');
 });
 
-app.use('/user', userApi);
+app.use('/v1/user', userApi);
 
 export default app;

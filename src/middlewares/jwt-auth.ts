@@ -54,39 +54,7 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
       return wrapper.response(res, 'fail', null, 'Please authenticate', 401);
     }
 
-    const roles = await prisma.roleUser.findMany({
-      where: {
-        userId: user.id
-      },
-      include: {
-        role: true
-      }
-    });
-
-    const roleIds = roles.map((role) => role.roleId);
-
-    const permissions = await prisma.rolePermission.findMany({
-      where: {
-        roleId: {
-          in: roleIds
-        }
-      },
-      include: {
-        permission: true
-      }
-    });
-
-    const userWithRolesAndPermissions = {
-      ...user,
-      roles: roles.map((role) => {
-        const rolePermissions = permissions.filter((rp) => rp.roleId === role.roleId).map((rp) => rp.permission);
-        return {
-          ...role.role,
-          permissions: rolePermissions
-        };
-      })
-    };
-    (req as RequestWithUser).user = userWithRolesAndPermissions;
+    (req as RequestWithUser).user = user;
 
     next();
   } catch (error: any) {
