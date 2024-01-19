@@ -11,57 +11,19 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   name         String
-  username     String    @unique
-  email        String?   @unique
+  username     String   @unique
+  email        String?  @unique
   password     String
   phone_number String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @default(now())
-
-  roles        RoleUser[]
-}
-
-model Role {
-  id        Int       @id @default(autoincrement())
-  name      String
-  key       String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-
-  permissions RolePermission[]
-  users       RoleUser[]
-}
-
-model Permission {
-  id        Int       @id @default(autoincrement())
-  name      String
-  key       String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-
-  roles RolePermission[]
-}
-
-model RolePermission {
-  id           Int      @id @default(autoincrement())
-  roleId       Int
-  permissionId Int
+  role         UserRole @default(USER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
-
-  role       Role       @relation(fields: [roleId], references: [id])
-  permission Permission @relation(fields: [permissionId], references: [id])
 }
 
-model RoleUser {
-  id        Int      @id @default(autoincrement())
-  roleId    Int
-  userId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  role Role @relation(fields: [roleId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+enum UserRole {
+  SUPERADMIN
+  ADMIN
+  USER
 }

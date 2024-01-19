@@ -35,7 +35,7 @@ const login = async (req: Request, res: Response) => {
 };
 
 const register = async (req: Request, res: Response) => {
-  const { name, username, password, role } = req.body;
+  const { name, username, password } = req.body;
 
   try {
     const existingUser = await prisma.user.findUnique({ where: { username } });
@@ -49,12 +49,7 @@ const register = async (req: Request, res: Response) => {
       data: {
         name,
         username,
-        password: hashedPassword,
-        roles: {
-          create: role.map((roleId: number) => ({
-            roleId
-          }))
-        }
+        password: hashedPassword
       }
     });
 
@@ -78,9 +73,6 @@ const whoAmI = async (req: RequestWithUser, res: Response) => {
     const user = await prisma.user.findFirst({
       where: {
         id: userId
-      },
-      include: {
-        roles: true
       }
     });
     const result = wrapper.data({ user });

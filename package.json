@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "start": "node build/index.js",
     "dev": "nodemon src/index.ts",
     "seed": "ts-node prisma/seed.ts",

@@ -15,8 +15,11 @@ yarn lint ||
 echo '🏗️👷 Checking typescript on your project 👷‍♂️🏗️'
 yarn ts.check
 
-echo '🏗️👷 building project 👷‍♂️🏗️'
+echo '🏗️👷 Building project 👷‍♂️🏗️'
 yarn build
+
+echo '🏗️👷 Adding project to github 👷‍♂️🏗️'
+git add .
 
 echo '🎉 No error found: committing this now.... ✨🚀🏄‍♂️🍻'
 

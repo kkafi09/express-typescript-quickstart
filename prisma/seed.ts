@@ -1,12 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import createPermission from './seeds/role-seeder';
-import createSuperAdmin from './seeds/admin-user-permission';
+import createSuperAdmin from './seeds/admin-user-seeder';
 
 const prisma = new PrismaClient();
 
 async function seed() {
-  createPermission();
   createSuperAdmin();
 
   console.log('Database seeded successfully');
